@@ -15,6 +15,10 @@ func (d *Day01) Parse() {
 	d.nums = utilities.GetIntLines("01p")
 }
 
+func (d Day01) Num() int {
+	return 1
+}
+
 func (d *Day01) calcFuel(mass int64) int64 {
 	return int64(math.Floor(float64(mass)/3)) - 2
 }

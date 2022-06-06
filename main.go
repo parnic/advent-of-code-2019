@@ -14,9 +14,15 @@ import (
 
 type day interface {
 	Parse()
+	Num() int
 	Part1() string
 	Part2() string
 }
+
+const (
+	part1Header = utilities.ColorGreen + "Part1:" + utilities.TextReset
+	part2Header = utilities.ColorGreen + "Part2:" + utilities.TextReset
+)
 
 var dayMap = map[int]day{
 	1: &days.Day01{},
@@ -49,27 +55,27 @@ func main() {
 }
 
 func solve(d day) {
-	fmt.Println(utilities.ColorCyan + "Day 01" + utilities.TextReset)
+	fmt.Println(fmt.Sprintf("%sDay %d%s", utilities.ColorCyan, d.Num(), utilities.TextReset))
 
 	parseStart := time.Now()
 	d.Parse()
 	parseTime := time.Since(parseStart)
 
 	part1Start := time.Now()
-	part1 := d.Part1()
+	part1Text := d.Part1()
 	part1Time := time.Since(part1Start)
 
 	part2Start := time.Now()
-	part2 := d.Part2()
+	part2Text := d.Part2()
 	part2Time := time.Since(part2Start)
 
-	fmt.Println(utilities.ColorGreen + "Part1:" + utilities.TextReset)
-	fmt.Println(part1)
-	fmt.Println(utilities.ColorGreen + "Part2:" + utilities.TextReset)
-	fmt.Println(part2)
+	fmt.Println(part1Header)
+	fmt.Println(part1Text)
+	fmt.Println(part2Header)
+	fmt.Println(part2Text)
 	fmt.Print(utilities.ColorBrightBlack)
-	fmt.Printf("Parsed in %s\n", parseTime)
-	fmt.Printf("Part01 in %s\n", part1Time)
-	fmt.Printf("Part02 in %s\n", part2Time)
+	fmt.Println("Parsed in", parseTime)
+	fmt.Println("Part01 in", part1Time)
+	fmt.Println("Part02 in", part2Time)
 	fmt.Println(utilities.TextReset)
 }
