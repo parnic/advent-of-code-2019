@@ -1,0 +1,4 @@
+*.exe
+__debug_bin
+aoc2019
+debug.test
