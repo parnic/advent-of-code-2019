@@ -3,7 +3,6 @@ package days
 import (
 	"fmt"
 	"math"
-	"time"
 
 	"parnic.com/aoc2019/utilities"
 )
@@ -14,7 +13,6 @@ type Day01 struct {
 
 func (d *Day01) Parse() {
 	d.nums = utilities.GetIntLines("01p")
-	time.Sleep(time.Microsecond * 500)
 }
 
 func (d *Day01) calcFuel(mass int64) int64 {
