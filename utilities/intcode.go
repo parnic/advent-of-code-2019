@@ -11,9 +11,11 @@ const (
 	opEnd = 99
 )
 
-func ParseIntcodeProgram(programStr string) []int64 {
+type IntcodeProgram []int64
+
+func ParseIntcodeProgram(programStr string) IntcodeProgram {
 	nums := strings.Split(programStr, ",")
-	program := make([]int64, len(nums))
+	program := make(IntcodeProgram, len(nums))
 	for idx, num := range nums {
 		iNum, err := strconv.ParseInt(num, 10, 64)
 		if err != nil {
@@ -25,7 +27,7 @@ func ParseIntcodeProgram(programStr string) []int64 {
 	return program
 }
 
-func RunIntcodeProgram(program []int64) {
+func RunIntcodeProgram(program IntcodeProgram) {
 	for instructionPointer := 0; instructionPointer < len(program); {
 		opcode := program[instructionPointer]
 		switch opcode {

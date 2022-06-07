@@ -24,6 +24,11 @@ func getData(filename string, lineHandler func(line string)) {
 	}
 }
 
+func LoadIntcodeProgram(filename string) IntcodeProgram {
+	programStr := GetStringContents(filename)
+	return ParseIntcodeProgram(programStr)
+}
+
 func GetStringContents(filename string) string {
 	var retval string
 	getData(filename, func(line string) {

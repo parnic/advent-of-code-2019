@@ -7,19 +7,19 @@ import (
 )
 
 type Day02 struct {
-	program []int64
+	program utilities.IntcodeProgram
 }
 
 func (d *Day02) Parse() {
-	d.program = utilities.ParseIntcodeProgram(utilities.GetStringContents("02p"))
+	d.program = utilities.LoadIntcodeProgram("02p")
 }
 
 func (d Day02) Num() int {
 	return 2
 }
 
-func (d *Day02) getProgramWithParams(param1, param2 int64) []int64 {
-	program := make([]int64, len(d.program))
+func (d *Day02) getProgramWithParams(param1, param2 int64) utilities.IntcodeProgram {
+	program := make(utilities.IntcodeProgram, len(d.program))
 	copy(program, d.program)
 	program[1] = param1
 	program[2] = param2
