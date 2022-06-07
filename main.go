@@ -29,7 +29,7 @@ var dayMap = map[int]day{
 }
 
 func main() {
-	arg := "1"
+	arg := strconv.Itoa(len(dayMap))
 	if len(os.Args) > 1 {
 		arg = os.Args[1]
 	}
