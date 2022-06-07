@@ -5,6 +5,12 @@ import (
 	"strings"
 )
 
+const (
+	opAdd = 1
+	opMul = 2
+	opEnd = 99
+)
+
 func ParseIntcodeProgram(programStr string) []int64 {
 	nums := strings.Split(programStr, ",")
 	program := make([]int64, len(nums))
@@ -23,7 +29,7 @@ func RunIntcodeProgram(program []int64) {
 	for instructionPointer := 0; instructionPointer < len(program); {
 		opcode := program[instructionPointer]
 		switch opcode {
-		case 1:
+		case opAdd:
 			param1 := program[instructionPointer+1]
 			param2 := program[instructionPointer+2]
 			param3 := program[instructionPointer+3]
@@ -31,7 +37,7 @@ func RunIntcodeProgram(program []int64) {
 
 			instructionPointer += 4
 			break
-		case 2:
+		case opMul:
 			param1 := program[instructionPointer+1]
 			param2 := program[instructionPointer+2]
 			param3 := program[instructionPointer+3]
@@ -39,7 +45,7 @@ func RunIntcodeProgram(program []int64) {
 
 			instructionPointer += 4
 			break
-		case 99:
+		case opEnd:
 			instructionPointer = len(program)
 			break
 		}
