@@ -26,6 +26,7 @@ const (
 
 var dayMap = map[int]day{
 	1: &days.Day01{},
+	2: &days.Day02{},
 }
 
 func main() {

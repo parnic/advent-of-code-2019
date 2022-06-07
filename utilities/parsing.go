@@ -24,6 +24,17 @@ func getData(filename string, lineHandler func(line string)) {
 	}
 }
 
+func GetStringContents(filename string) string {
+	var retval string
+	getData(filename, func(line string) {
+		if len(retval) != 0 {
+			panic("tried to parse multi-line file as a single line")
+		}
+		retval = line
+	})
+	return retval
+}
+
 func GetStringLines(filename string) []string {
 	retval := make([]string, 0)
 	getData(filename, func(line string) {
