@@ -56,7 +56,7 @@ func main() {
 }
 
 func solve(d day) {
-	fmt.Println(fmt.Sprintf("%sDay %d%s", utilities.ColorCyan, d.Num(), utilities.TextReset))
+	fmt.Printf("%sDay %d%s\n", utilities.ColorCyan, d.Num(), utilities.TextReset)
 
 	parseStart := time.Now()
 	d.Parse()
