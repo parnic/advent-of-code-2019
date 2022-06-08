@@ -27,6 +27,7 @@ const (
 var dayMap = []day{
 	&days.Day01{},
 	&days.Day02{},
+	&days.Day03{},
 }
 
 func main() {
