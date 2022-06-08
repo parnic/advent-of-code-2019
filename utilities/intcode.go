@@ -27,7 +27,7 @@ func ParseIntcodeProgram(programStr string) IntcodeProgram {
 	return program
 }
 
-func RunIntcodeProgram(program IntcodeProgram) {
+func (program IntcodeProgram) Run() {
 	for instructionPointer := 0; instructionPointer < len(program); {
 		opcode := program[instructionPointer]
 		switch opcode {

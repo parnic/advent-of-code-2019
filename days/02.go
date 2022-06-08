@@ -28,7 +28,7 @@ func (d *Day02) getProgramWithParams(param1, param2 int64) utilities.IntcodeProg
 
 func (d *Day02) Part1() string {
 	program := d.getProgramWithParams(12, 2)
-	utilities.RunIntcodeProgram(program)
+	program.Run()
 
 	return fmt.Sprintf("Position 0 = %s%d%s", utilities.TextBold, program[0], utilities.TextReset)
 }
@@ -42,7 +42,7 @@ func (d *Day02) Part2() string {
 	for noun = 0; noun <= 99; noun++ {
 		for verb = 0; verb <= 99; verb++ {
 			program := d.getProgramWithParams(noun, verb)
-			utilities.RunIntcodeProgram(program)
+			program.Run()
 
 			if program[0] == sentinel {
 				found = true
