@@ -24,9 +24,9 @@ const (
 	part2Header = utilities.ColorGreen + "Part2:" + utilities.TextReset
 )
 
-var dayMap = map[int]day{
-	1: &days.Day01{},
-	2: &days.Day02{},
+var dayMap = []day{
+	&days.Day01{},
+	&days.Day02{},
 }
 
 func main() {
@@ -44,12 +44,11 @@ func main() {
 			log.Fatalf("Invalid day " + utilities.ColorCyan + arg + utilities.TextReset)
 		}
 
-		p, ok := dayMap[iArg]
-		if !ok {
+		if iArg < 0 || iArg > len(dayMap) {
 			log.Fatalf("Unknown day " + utilities.ColorCyan + arg + utilities.TextReset)
 		}
 
-		solve(p)
+		solve(dayMap[iArg-1])
 	}
 
 	os.Exit(0)
