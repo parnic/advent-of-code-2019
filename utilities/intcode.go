@@ -38,7 +38,6 @@ func RunIntcodeProgram(program IntcodeProgram) {
 			program[param3] = program[param1] + program[param2]
 
 			instructionPointer += 4
-			break
 		case opMul:
 			param1 := program[instructionPointer+1]
 			param2 := program[instructionPointer+2]
@@ -46,10 +45,8 @@ func RunIntcodeProgram(program IntcodeProgram) {
 			program[param3] = program[param1] * program[param2]
 
 			instructionPointer += 4
-			break
 		case opEnd:
 			instructionPointer = len(program)
-			break
 		}
 	}
 }
