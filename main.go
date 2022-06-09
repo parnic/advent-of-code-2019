@@ -33,7 +33,7 @@ var dayMap = []day{
 
 func main() {
 	arg := strconv.Itoa(len(dayMap))
-	if len(os.Args) > 1 {
+	if len(os.Args) > 1 && len(os.Args[1]) > 0 {
 		arg = os.Args[1]
 	}
 	if strings.ToLower(arg) == "all" {
