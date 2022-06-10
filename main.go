@@ -37,9 +37,11 @@ func main() {
 		arg = os.Args[1]
 	}
 	if strings.ToLower(arg) == "all" {
+		startTime := time.Now()
 		for _, v := range dayMap {
 			solve(v)
 		}
+		fmt.Printf("%sAll days completed in %v%s\n", utilities.ColorBrightBlack, time.Since(startTime), utilities.TextReset)
 	} else {
 		iArg, err := strconv.Atoi(arg)
 		if err != nil {
