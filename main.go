@@ -69,6 +69,7 @@ func main() {
 
 func solve(d day) {
 	fmt.Printf("%sDay %d%s\n", utilities.ColorCyan, d.Num(), utilities.TextReset)
+	fmt.Printf("----%s\n", strings.Repeat("-", len(strconv.Itoa(d.Num()))))
 
 	runPart1 := (!*flagPart1 && !*flagPart2) || *flagPart1
 	runPart2 := (!*flagPart1 && !*flagPart2) || *flagPart2
@@ -93,11 +94,13 @@ func solve(d day) {
 
 	if runPart1 {
 		fmt.Println(part1Header)
-		fmt.Println(part1Text)
+		fmt.Println(">", part1Text)
+		fmt.Println()
 	}
 	if runPart2 {
 		fmt.Println(part2Header)
-		fmt.Println(part2Text)
+		fmt.Println(">", part2Text)
+		fmt.Println()
 	}
 	fmt.Print(utilities.ColorBrightBlack)
 	fmt.Println("Parsed in", parseTime)
