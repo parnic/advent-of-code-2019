@@ -3,18 +3,33 @@ package utilities
 import (
 	"bufio"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
 
 	"parnic.com/aoc2019/inputs"
 )
 
 func getData(filename string, lineHandler func(line string)) {
-	file, err := inputs.Sets.Open(fmt.Sprintf("%s.txt", filename))
-	// version that doesn't use embedded files:
-	// file, err := os.Open(fmt.Sprintf("inputs/%s.txt", filename))
+	var err error
+	stdinStat, err := os.Stdin.Stat()
 	if err != nil {
 		panic(err)
 	}
+
+	var file io.ReadCloser
+	if (stdinStat.Mode()&os.ModeCharDevice) == 0 && stdinStat.Size() > 0 {
+		file = os.Stdin
+	} else {
+		file, err = inputs.Sets.Open(fmt.Sprintf("%s.txt", filename))
+		// version that doesn't use embedded files:
+		// file, err := os.Open(fmt.Sprintf("inputs/%s.txt", filename))
+
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
