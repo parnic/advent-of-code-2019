@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -24,6 +25,11 @@ const (
 	part2Header = utilities.ColorGreen + "Part2:" + utilities.TextReset
 )
 
+var (
+	flagPart1 = flag.Bool("part1", false, "whether to run part1 or not; if no flags are present, all parts are run")
+	flagPart2 = flag.Bool("part2", false, "whether to run part2 or not; if no flags are present, all parts are run")
+)
+
 var dayMap = []day{
 	&days.Day01{},
 	&days.Day02{},
@@ -32,9 +38,12 @@ var dayMap = []day{
 }
 
 func main() {
+	flag.Parse()
+
 	arg := strconv.Itoa(len(dayMap))
-	if len(os.Args) > 1 && len(os.Args[1]) > 0 {
-		arg = os.Args[1]
+	flagArgs := flag.Args()
+	if len(flagArgs) > 0 && len(flagArgs[0]) > 0 {
+		arg = flagArgs[0]
 	}
 	if strings.ToLower(arg) == "all" {
 		startTime := time.Now()
@@ -61,25 +70,42 @@ func main() {
 func solve(d day) {
 	fmt.Printf("%sDay %d%s\n", utilities.ColorCyan, d.Num(), utilities.TextReset)
 
+	runPart1 := (!*flagPart1 && !*flagPart2) || *flagPart1
+	runPart2 := (!*flagPart1 && !*flagPart2) || *flagPart2
+
 	parseStart := time.Now()
 	d.Parse()
 	parseTime := time.Since(parseStart)
 
 	part1Start := time.Now()
-	part1Text := d.Part1()
+	var part1Text string
+	if runPart1 {
+		part1Text = d.Part1()
+	}
 	part1Time := time.Since(part1Start)
 
 	part2Start := time.Now()
-	part2Text := d.Part2()
+	var part2Text string
+	if runPart2 {
+		part2Text = d.Part2()
+	}
 	part2Time := time.Since(part2Start)
 
-	fmt.Println(part1Header)
-	fmt.Println(part1Text)
-	fmt.Println(part2Header)
-	fmt.Println(part2Text)
+	if runPart1 {
+		fmt.Println(part1Header)
+		fmt.Println(part1Text)
+	}
+	if runPart2 {
+		fmt.Println(part2Header)
+		fmt.Println(part2Text)
+	}
 	fmt.Print(utilities.ColorBrightBlack)
 	fmt.Println("Parsed in", parseTime)
-	fmt.Println("Part01 in", part1Time)
-	fmt.Println("Part02 in", part2Time)
+	if runPart1 {
+		fmt.Println("Part01 in", part1Time)
+	}
+	if runPart2 {
+		fmt.Println("Part02 in", part2Time)
+	}
 	fmt.Println(utilities.TextReset)
 }
