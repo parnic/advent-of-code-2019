@@ -1,14 +1,16 @@
 package days
 
 import (
-	"parnic.com/aoc2019/utilities"
+	"fmt"
+
+	u "parnic.com/aoc2019/utilities"
 )
 
 type DayTemplate struct {
 }
 
 func (d *DayTemplate) Parse() {
-	utilities.GetIntLines("Templatep")
+	u.GetIntLines("Templatep")
 }
 
 func (d DayTemplate) Num() int {
@@ -16,9 +18,9 @@ func (d DayTemplate) Num() int {
 }
 
 func (d *DayTemplate) Part1() string {
-	return ""
+	return fmt.Sprintf("%s%d%s", u.TextBold, 0, u.TextReset)
 }
 
 func (d *DayTemplate) Part2() string {
-	return ""
+	return fmt.Sprintf("%s%d%s", u.TextBold, 0, u.TextReset)
 }
