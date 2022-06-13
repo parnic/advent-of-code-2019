@@ -18,19 +18,20 @@ func (d Day02) Num() int {
 	return 2
 }
 
-func (d *Day02) getProgramWithParams(param1, param2 int64) utilities.IntcodeProgram {
-	program := make(utilities.IntcodeProgram, len(d.program))
-	copy(program, d.program)
-	program[1] = param1
-	program[2] = param2
-	return program
+func (d *Day02) setParams(param1, param2 int64) {
+	d.program.Reset()
+	d.program.SetMemory(1, param1)
+	d.program.SetMemory(2, param2)
 }
 
 func (d *Day02) Part1() string {
-	program := d.getProgramWithParams(12, 2)
-	program.Run()
+	d.setParams(12, 2)
+	d.program.Run()
 
-	return fmt.Sprintf("Position 0 = %s%d%s", utilities.TextBold, program[0], utilities.TextReset)
+	if d.program.GetMemory(0) != 4138658 {
+		panic("")
+	}
+	return fmt.Sprintf("Position 0 = %s%d%s", utilities.TextBold, d.program.GetMemory(0), utilities.TextReset)
 }
 
 func (d *Day02) Part2() string {
@@ -41,10 +42,10 @@ func (d *Day02) Part2() string {
 	found := false
 	for noun = 0; noun <= 99; noun++ {
 		for verb = 0; verb <= 99; verb++ {
-			program := d.getProgramWithParams(noun, verb)
-			program.Run()
+			d.setParams(noun, verb)
+			d.program.Run()
 
-			if program[0] == sentinel {
+			if d.program.GetMemory(0) == sentinel {
 				found = true
 				break
 			}
@@ -57,6 +58,9 @@ func (d *Day02) Part2() string {
 
 	if !found {
 		panic("!found")
+	}
+	if noun != 72 || verb != 64 {
+		panic("")
 	}
 
 	return fmt.Sprintf("%d created by noun=%d, verb=%d. 100 * noun + verb = %s%d%s",
