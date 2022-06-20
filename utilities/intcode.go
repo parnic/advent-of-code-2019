@@ -7,23 +7,26 @@ import (
 )
 
 const (
-	opAdd         = 1
-	opMultiply    = 2
-	opInput       = 3
-	opOutput      = 4
-	opJumpIfTrue  = 5
-	opJumpIfFalse = 6
-	opLessThan    = 7
-	opEquals      = 8
-	opHalt        = 99
+	opAdd          = 1
+	opMultiply     = 2
+	opInput        = 3
+	opOutput       = 4
+	opJumpIfTrue   = 5
+	opJumpIfFalse  = 6
+	opLessThan     = 7
+	opEquals       = 8
+	opRelativeBase = 9
+	opHalt         = 99
 
 	modePosition  = 0
 	modeImmediate = 1
+	modeRelative  = 2
 )
 
 type IntcodeProgram struct {
-	memory  []int64
-	program []int64
+	memory       []int64
+	program      []int64
+	relativeBase int
 }
 
 type IntcodeProgramState struct {
@@ -74,34 +77,60 @@ func (p *IntcodeProgram) Copy() IntcodeProgram {
 func (p *IntcodeProgram) init() {
 	if p.memory == nil {
 		p.memory = make([]int64, len(p.program))
-		p.Reset()
+		copy(p.memory, p.program)
 	}
 }
 
 func (p *IntcodeProgram) getParamValue(param, mode int) int64 {
 	switch mode {
 	case modePosition:
-		return p.memory[param]
+		return p.GetMemory(param)
 
 	case modeImmediate:
 		return int64(param)
+
+	case modeRelative:
+		return p.GetMemory(param + p.relativeBase)
 	}
 
 	panic("unhandled param mode")
 }
 
 func (p *IntcodeProgram) GetMemory(idx int) int64 {
+	p.ensureMemoryCapacity(idx)
 	return p.memory[idx]
 }
 
 func (p *IntcodeProgram) SetMemory(idx int, val int64) {
 	p.init()
+	p.ensureMemoryCapacity(idx)
 	p.memory[idx] = val
 }
 
+func (p *IntcodeProgram) setMemory(idx int, val int64, mode int) {
+	if mode == modeImmediate {
+		panic("exception executing program - write parameter must never be in immediate mode")
+	}
+	if mode == modeRelative {
+		idx = idx + p.relativeBase
+	}
+
+	p.SetMemory(idx, val)
+}
+
+func (p *IntcodeProgram) ensureMemoryCapacity(address int) {
+	if len(p.memory) > address {
+		return
+	}
+
+	p.memory = append(p.memory, make([]int64, address+1-len(p.memory))...)
+}
+
 func (p *IntcodeProgram) Reset() {
+	p.memory = nil
 	p.init()
 	copy(p.memory, p.program)
+	p.relativeBase = 0
 }
 
 func (p *IntcodeProgram) Run() {
@@ -113,7 +142,7 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 
 	inputsRequested := 0
 	for instructionPointer := 0; instructionPointer < len(p.program); {
-		instruction := p.memory[instructionPointer]
+		instruction := p.GetMemory(instructionPointer)
 		instructionPointer++
 
 		paramModes := [3]int{
@@ -130,37 +159,37 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 		opcode := instruction % 100
 		switch opcode {
 		case opAdd:
-			param1 := p.memory[instructionPointer]
-			param2 := p.memory[instructionPointer+1]
-			param3 := p.memory[instructionPointer+2]
-			p.memory[param3] = p.getParamValue(int(param1), paramModes[0]) + p.getParamValue(int(param2), paramModes[1])
+			param1 := p.GetMemory(instructionPointer)
+			param2 := p.GetMemory(instructionPointer + 1)
+			param3 := p.GetMemory(instructionPointer + 2)
+			p.setMemory(int(param3), p.getParamValue(int(param1), paramModes[0])+p.getParamValue(int(param2), paramModes[1]), paramModes[2])
 
 			instructionPointer += 3
 
 		case opMultiply:
-			param1 := p.memory[instructionPointer]
-			param2 := p.memory[instructionPointer+1]
-			param3 := p.memory[instructionPointer+2]
-			p.memory[param3] = p.getParamValue(int(param1), paramModes[0]) * p.getParamValue(int(param2), paramModes[1])
+			param1 := p.GetMemory(instructionPointer)
+			param2 := p.GetMemory(instructionPointer + 1)
+			param3 := p.GetMemory(instructionPointer + 2)
+			p.setMemory(int(param3), p.getParamValue(int(param1), paramModes[0])*p.getParamValue(int(param2), paramModes[1]), paramModes[2])
 
 			instructionPointer += 3
 
 		case opInput:
 			inputsRequested++
-			param1 := p.memory[instructionPointer]
-			p.memory[param1] = inputFunc(inputsRequested)
+			param1 := p.GetMemory(instructionPointer)
+			p.setMemory(int(param1), inputFunc(inputsRequested), paramModes[0])
 
 			instructionPointer += 1
 
 		case opOutput:
-			param1 := p.memory[instructionPointer]
+			param1 := p.GetMemory(instructionPointer)
 			outputFunc(p.getParamValue(int(param1), paramModes[0]), p.makeState(instructionPointer))
 
 			instructionPointer += 1
 
 		case opJumpIfTrue:
-			param1 := p.memory[instructionPointer]
-			param2 := p.memory[instructionPointer+1]
+			param1 := p.GetMemory(instructionPointer)
+			param2 := p.GetMemory(instructionPointer + 1)
 
 			if p.getParamValue(int(param1), paramModes[0]) != 0 {
 				instructionPointer = int(p.getParamValue(int(param2), paramModes[1]))
@@ -169,8 +198,8 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 			}
 
 		case opJumpIfFalse:
-			param1 := p.memory[instructionPointer]
-			param2 := p.memory[instructionPointer+1]
+			param1 := p.GetMemory(instructionPointer)
+			param2 := p.GetMemory(instructionPointer + 1)
 
 			if p.getParamValue(int(param1), paramModes[0]) == 0 {
 				instructionPointer = int(p.getParamValue(int(param2), paramModes[1]))
@@ -179,30 +208,37 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 			}
 
 		case opLessThan:
-			param1 := p.memory[instructionPointer]
-			param2 := p.memory[instructionPointer+1]
-			param3 := p.memory[instructionPointer+2]
+			param1 := p.GetMemory(instructionPointer)
+			param2 := p.GetMemory(instructionPointer + 1)
+			param3 := p.GetMemory(instructionPointer + 2)
 
 			if p.getParamValue(int(param1), paramModes[0]) < p.getParamValue(int(param2), paramModes[1]) {
-				p.memory[param3] = 1
+				p.setMemory(int(param3), 1, paramModes[2])
 			} else {
-				p.memory[param3] = 0
+				p.setMemory(int(param3), 0, paramModes[2])
 			}
 
 			instructionPointer += 3
 
 		case opEquals:
-			param1 := p.memory[instructionPointer]
-			param2 := p.memory[instructionPointer+1]
-			param3 := p.memory[instructionPointer+2]
+			param1 := p.GetMemory(instructionPointer)
+			param2 := p.GetMemory(instructionPointer + 1)
+			param3 := p.GetMemory(instructionPointer + 2)
 
 			if p.getParamValue(int(param1), paramModes[0]) == p.getParamValue(int(param2), paramModes[1]) {
-				p.memory[param3] = 1
+				p.setMemory(int(param3), 1, paramModes[2])
 			} else {
-				p.memory[param3] = 0
+				p.setMemory(int(param3), 0, paramModes[2])
 			}
 
 			instructionPointer += 3
+
+		case opRelativeBase:
+			param1 := p.GetMemory(instructionPointer)
+
+			p.relativeBase += int(p.getParamValue(int(param1), paramModes[0]))
+
+			instructionPointer += 1
 
 		case opHalt:
 			instructionPointer = len(p.program)
