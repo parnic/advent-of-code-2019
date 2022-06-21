@@ -127,9 +127,15 @@ func (p *IntcodeProgram) ensureMemoryCapacity(address int) {
 }
 
 func (p *IntcodeProgram) Reset() {
-	p.memory = nil
+	wiped := false
+	if len(p.memory) != len(p.program) {
+		wiped = true
+		p.memory = nil
+	}
 	p.init()
-	copy(p.memory, p.program)
+	if !wiped {
+		copy(p.memory, p.program)
+	}
 	p.relativeBase = 0
 }
 
