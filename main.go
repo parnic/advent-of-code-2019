@@ -90,6 +90,11 @@ func solve(d day) {
 		part1Text = d.Part1()
 	}
 	part1Time := time.Since(part1Start)
+	if runPart1 {
+		fmt.Println(part1Header)
+		fmt.Println(">", part1Text)
+		fmt.Println()
+	}
 
 	part2Start := time.Now()
 	var part2Text string
@@ -97,17 +102,12 @@ func solve(d day) {
 		part2Text = d.Part2()
 	}
 	part2Time := time.Since(part2Start)
-
-	if runPart1 {
-		fmt.Println(part1Header)
-		fmt.Println(">", part1Text)
-		fmt.Println()
-	}
 	if runPart2 {
 		fmt.Println(part2Header)
 		fmt.Println(">", part2Text)
 		fmt.Println()
 	}
+
 	fmt.Print(utilities.ColorBrightBlack)
 	fmt.Println("Parsed in", parseTime)
 	if runPart1 {
