@@ -6,29 +6,24 @@ import (
 	"strconv"
 	"strings"
 
-	"parnic.com/aoc2019/utilities"
+	u "parnic.com/aoc2019/utilities"
 )
 
-type Pair[T, U any] struct {
-	a T
-	b U
-}
-
 type Day03 struct {
-	line1    []Pair[byte, int]
-	line2    []Pair[byte, int]
-	visited  map[Pair[int, int]]int
-	overlaps []Pair[Pair[int, int], int]
+	line1    []u.Pair[byte, int]
+	line2    []u.Pair[byte, int]
+	visited  map[u.Pair[int, int]]int
+	overlaps []u.Pair[u.Pair[int, int], int]
 }
 
 func (d *Day03) Parse() {
-	lines := utilities.GetStringLines("03p")
+	lines := u.GetStringLines("03p")
 
 	line1data := strings.Split(lines[0], ",")
 	line2data := strings.Split(lines[1], ",")
 
-	d.line1 = make([]Pair[byte, int], len(line1data))
-	d.line2 = make([]Pair[byte, int], len(line2data))
+	d.line1 = make([]u.Pair[byte, int], len(line1data))
+	d.line2 = make([]u.Pair[byte, int], len(line2data))
 
 	for idx, instr := range line1data {
 		dir := instr[0]
@@ -38,7 +33,7 @@ func (d *Day03) Parse() {
 			panic(err)
 		}
 
-		d.line1[idx] = Pair[byte, int]{a: dir, b: iAmt}
+		d.line1[idx] = u.Pair[byte, int]{First: dir, Second: iAmt}
 	}
 
 	for idx, instr := range line2data {
@@ -49,7 +44,7 @@ func (d *Day03) Parse() {
 			panic(err)
 		}
 
-		d.line2[idx] = Pair[byte, int]{a: dir, b: iAmt}
+		d.line2[idx] = u.Pair[byte, int]{First: dir, Second: iAmt}
 	}
 }
 
@@ -58,96 +53,96 @@ func (d Day03) Num() int {
 }
 
 func (d *Day03) Part1() string {
-	d.visited = make(map[Pair[int, int]]int)
+	d.visited = make(map[u.Pair[int, int]]int)
 	var x int
 	var y int
 	var steps int
 	for _, inst := range d.line1 {
-		switch inst.a {
+		switch inst.First {
 		case 'R':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				d.visited[Pair[int, int]{a: x + i, b: y}] = steps
+				d.visited[u.Pair[int, int]{First: x + i, Second: y}] = steps
 			}
-			x += inst.b
+			x += inst.Second
 		case 'U':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				d.visited[Pair[int, int]{a: x, b: y + i}] = steps
+				d.visited[u.Pair[int, int]{First: x, Second: y + i}] = steps
 			}
-			y += inst.b
+			y += inst.Second
 		case 'L':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				d.visited[Pair[int, int]{a: x - i, b: y}] = steps
+				d.visited[u.Pair[int, int]{First: x - i, Second: y}] = steps
 			}
-			x -= inst.b
+			x -= inst.Second
 		case 'D':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				d.visited[Pair[int, int]{a: x, b: y - i}] = steps
+				d.visited[u.Pair[int, int]{First: x, Second: y - i}] = steps
 			}
-			y -= inst.b
+			y -= inst.Second
 		}
 	}
 
 	x = 0
 	y = 0
 	steps = 0
-	d.overlaps = make([]Pair[Pair[int, int], int], 0)
+	d.overlaps = make([]u.Pair[u.Pair[int, int], int], 0)
 	for _, inst := range d.line2 {
-		switch inst.a {
+		switch inst.First {
 		case 'R':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				if _, exists := d.visited[Pair[int, int]{x + i, y}]; exists {
-					d.overlaps = append(d.overlaps, Pair[Pair[int, int], int]{a: Pair[int, int]{x + i, y}, b: steps})
+				if _, exists := d.visited[u.Pair[int, int]{First: x + i, Second: y}]; exists {
+					d.overlaps = append(d.overlaps, u.Pair[u.Pair[int, int], int]{First: u.Pair[int, int]{First: x + i, Second: y}, Second: steps})
 				}
 			}
-			x += inst.b
+			x += inst.Second
 		case 'U':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				if _, exists := d.visited[Pair[int, int]{x, y + i}]; exists {
-					d.overlaps = append(d.overlaps, Pair[Pair[int, int], int]{a: Pair[int, int]{x, y + i}, b: steps})
+				if _, exists := d.visited[u.Pair[int, int]{First: x, Second: y + i}]; exists {
+					d.overlaps = append(d.overlaps, u.Pair[u.Pair[int, int], int]{First: u.Pair[int, int]{First: x, Second: y + i}, Second: steps})
 				}
 			}
-			y += inst.b
+			y += inst.Second
 		case 'L':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				if _, exists := d.visited[Pair[int, int]{x - i, y}]; exists {
-					d.overlaps = append(d.overlaps, Pair[Pair[int, int], int]{a: Pair[int, int]{x - i, y}, b: steps})
+				if _, exists := d.visited[u.Pair[int, int]{First: x - i, Second: y}]; exists {
+					d.overlaps = append(d.overlaps, u.Pair[u.Pair[int, int], int]{First: u.Pair[int, int]{First: x - i, Second: y}, Second: steps})
 				}
 			}
-			x -= inst.b
+			x -= inst.Second
 		case 'D':
-			for i := 1; i <= inst.b; i++ {
+			for i := 1; i <= inst.Second; i++ {
 				steps++
-				if _, exists := d.visited[Pair[int, int]{x, y - i}]; exists {
-					d.overlaps = append(d.overlaps, Pair[Pair[int, int], int]{a: Pair[int, int]{x, y - i}, b: steps})
+				if _, exists := d.visited[u.Pair[int, int]{First: x, Second: y - i}]; exists {
+					d.overlaps = append(d.overlaps, u.Pair[u.Pair[int, int], int]{First: u.Pair[int, int]{First: x, Second: y - i}, Second: steps})
 				}
 			}
-			y -= inst.b
+			y -= inst.Second
 		}
 	}
 
 	minDist := math.MaxInt
 	for _, overlap := range d.overlaps {
-		dist := int(math.Abs(float64(overlap.a.a))) + int(math.Abs(float64(overlap.a.b)))
+		dist := int(math.Abs(float64(overlap.First.First))) + int(math.Abs(float64(overlap.First.Second)))
 		if dist < minDist {
 			minDist = dist
 		}
 	}
 
-	return fmt.Sprintf("Closest overlap manhattan distance = %s%d%s", utilities.TextBold, minDist, utilities.TextReset)
+	return fmt.Sprintf("Closest overlap manhattan distance = %s%d%s", u.TextBold, minDist, u.TextReset)
 }
 
 func (d *Day03) Part2() string {
 	minOverlap := math.MaxInt
 	for _, overlap := range d.overlaps {
-		line1Steps := d.visited[overlap.a]
-		line2Steps := overlap.b
+		line1Steps := d.visited[overlap.First]
+		line2Steps := overlap.Second
 
 		totalSteps := line1Steps + line2Steps
 		if totalSteps < minOverlap {
@@ -155,5 +150,5 @@ func (d *Day03) Part2() string {
 		}
 	}
 
-	return fmt.Sprintf("Minimum steps to overlap = %s%d%s", utilities.TextBold, minOverlap, utilities.TextReset)
+	return fmt.Sprintf("Minimum steps to overlap = %s%d%s", u.TextBold, minOverlap, u.TextReset)
 }
