@@ -10,3 +10,13 @@ func ArrayContains[T comparable](array []T, val T) bool {
 
 	return false
 }
+
+func AddToArray[V comparable, T ~[]V](arr *T, val V) bool {
+	for _, v := range *arr {
+		if v == val {
+			return false
+		}
+	}
+	*arr = append(*arr, val)
+	return true
+}
