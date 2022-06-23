@@ -7,6 +7,12 @@ type Vec2[T Number] struct {
 	Y T
 }
 
+type Vec3[T Number] struct {
+	X T
+	Y T
+	Z T
+}
+
 func (v Vec2[T]) Dot(other Vec2[T]) T {
 	return (v.X * other.X) + (v.Y * other.Y)
 }
@@ -36,4 +42,28 @@ func VecBetween[T Number](a, b Vec2[T]) Vec2[T] {
 		X: a.X - b.X,
 		Y: a.Y - b.Y,
 	}
+}
+
+func (v Vec3[T]) Dot(other Vec3[T]) T {
+	return (v.X * other.X) + (v.Y * other.Y) + (v.Z * other.Z)
+}
+
+func (v Vec3[T]) Len() T {
+	return T(math.Sqrt(float64(v.LenSquared())))
+}
+
+func (v Vec3[T]) LenSquared() T {
+	return (v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z)
+}
+
+func (v *Vec3[T]) Add(other Vec3[T]) {
+	v.X += other.X
+	v.Y += other.Y
+	v.Z += other.Z
+}
+
+func (v Vec3[T]) Equals(other Vec3[T]) bool {
+	return v.X == other.X &&
+		v.Y == other.Y &&
+		v.Z == other.Z
 }
