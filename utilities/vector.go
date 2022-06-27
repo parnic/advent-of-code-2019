@@ -37,6 +37,11 @@ func (v Vec2[T]) AngleBetween(other Vec2[T]) float64 {
 	return rad * 180 / math.Pi
 }
 
+func (v Vec2[T]) Equals(other Vec2[T]) bool {
+	return v.X == other.X &&
+		v.Y == other.Y
+}
+
 func VecBetween[T Number](a, b Vec2[T]) Vec2[T] {
 	return Vec2[T]{
 		X: a.X - b.X,
