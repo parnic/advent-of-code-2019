@@ -4,7 +4,7 @@ type Permutable interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64
 }
 
-func GetPermutations[T Permutable](arr []T) [][]T {
+func GetPermutations[T Permutable](arr ...T) [][]T {
 	var helper func([]T, int)
 	res := [][]T{}
 

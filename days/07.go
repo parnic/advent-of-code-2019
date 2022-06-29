@@ -28,7 +28,7 @@ func (d *Day07) Part1() string {
 	var highestVal int64
 	var highestSequence []int64
 
-	allSequences := utilities.GetPermutations([]int64{0, 1, 2, 3, 4})
+	allSequences := utilities.GetPermutations([]int64{0, 1, 2, 3, 4}...)
 	for _, sequence := range allSequences {
 		if len(sequence) != len(d.amps) {
 			panic("input sequence does not match up to number of amplifiers")
@@ -68,7 +68,7 @@ func (d *Day07) Part2() string {
 	var highestVal int64
 	var highestSequence []int64
 
-	allSequences := utilities.GetPermutations([]int64{5, 6, 7, 8, 9})
+	allSequences := utilities.GetPermutations([]int64{5, 6, 7, 8, 9}...)
 	for _, sequence := range allSequences {
 		if len(sequence) != len(d.amps) {
 			panic("input sequence does not match up to number of amplifiers")

@@ -24,9 +24,10 @@ const (
 )
 
 type IntcodeProgram struct {
-	memory       []int64
-	program      []int64
-	relativeBase int
+	memory        []int64
+	program       []int64
+	relativeBase  int
+	haltRequested bool
 }
 
 type IntcodeProgramState struct {
@@ -147,7 +148,7 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 	p.init()
 
 	inputsRequested := 0
-	for instructionPointer := 0; instructionPointer < len(p.program); {
+	for instructionPointer := 0; instructionPointer < len(p.program) && !p.haltRequested; {
 		instruction := p.GetMemory(instructionPointer)
 		instructionPointer++
 
@@ -253,4 +254,10 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 			panic(fmt.Sprintf("exception executing program - unhandled opcode %d", opcode))
 		}
 	}
+
+	p.haltRequested = false
+}
+
+func (p *IntcodeProgram) Stop() {
+	p.haltRequested = true
 }
