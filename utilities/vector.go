@@ -13,6 +13,8 @@ type Vec3[T Number] struct {
 	Z T
 }
 
+type Vec2i Vec2[int]
+
 func (v Vec2[T]) Dot(other Vec2[T]) T {
 	return (v.X * other.X) + (v.Y * other.Y)
 }
