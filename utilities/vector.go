@@ -44,11 +44,16 @@ func (v Vec2[T]) Equals(other Vec2[T]) bool {
 		v.Y == other.Y
 }
 
+func (v Vec2[T]) ManhattanDistance(other Vec2[T]) T {
+	return T(math.Abs(float64(v.X-other.X)) + math.Abs(float64(v.Y-other.Y)))
+}
+
 func VecBetween[T Number](a, b Vec2[T]) Vec2[T] {
-	return Vec2[T]{
-		X: a.X - b.X,
-		Y: a.Y - b.Y,
-	}
+	return a.To(b)
+}
+
+func ManhattanDistance[T Number](a, b Vec2[T]) T {
+	return a.ManhattanDistance(b)
 }
 
 func (v Vec3[T]) Dot(other Vec3[T]) T {
