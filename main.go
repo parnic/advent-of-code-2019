@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime/pprof"
 	"strconv"
 	"strings"
 	"time"
@@ -26,8 +27,10 @@ const (
 )
 
 var (
-	flagPart1 = flag.Bool("part1", false, "whether to run part1 or not; if no flags are present, all parts are run")
-	flagPart2 = flag.Bool("part2", false, "whether to run part2 or not; if no flags are present, all parts are run")
+	flagPart1      = flag.Bool("part1", false, "whether to run part1 or not; if no flags are present, all parts are run")
+	flagPart2      = flag.Bool("part2", false, "whether to run part2 or not; if no flags are present, all parts are run")
+	flagCpuProfile = flag.String("cpuprofile", "", "write cpu profile to file")
+	flagMemProfile = flag.String("memprofile", "", "write memory profile to file")
 )
 
 var dayMap = []day{
@@ -53,6 +56,17 @@ var dayMap = []day{
 func main() {
 	flag.Parse()
 
+	if *flagCpuProfile != "" {
+		f, err := os.Create(*flagCpuProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer f.Close()
+
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
+
 	arg := strconv.Itoa(len(dayMap))
 	flagArgs := flag.Args()
 	if len(flagArgs) > 0 && len(flagArgs[0]) > 0 {
@@ -77,7 +91,14 @@ func main() {
 		solve(dayMap[iArg-1])
 	}
 
-	os.Exit(0)
+	if *flagMemProfile != "" {
+		f, err := os.Create(*flagMemProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+	}
 }
 
 func solve(d day) {
