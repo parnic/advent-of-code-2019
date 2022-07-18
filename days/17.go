@@ -48,6 +48,7 @@ type Day17 struct {
 
 func (d *Day17) Parse() {
 	d.program = u.LoadIntcodeProgram("17p")
+	// d.program.SetDebugASCIIPrint(true)
 }
 
 func (d Day17) Num() int {
@@ -388,9 +389,8 @@ func (d *Day17) Part2() string {
 	row := 0
 	var outputState int
 	var lastOutput int64
-	var instructionStr string
 	d.program.RunIn(func(inputStep int) int64 {
-		return int64(instructionStr[inputStep-1])
+		panic("unexpected read")
 	}, func(val int64, state u.IntcodeProgramState) {
 		rVal := rune(val)
 		if outputState == 0 {
@@ -401,7 +401,7 @@ func (d *Day17) Part2() string {
 
 		if rVal == '\n' && lastOutput == '\n' {
 			if outputState == 0 {
-				instructionStr = beforeGrid.solvePath(beforeBotLocation, beforeBotFacing)
+				d.program.FeedInputString(beforeGrid.solvePath(beforeBotLocation, beforeBotFacing))
 			}
 			outputState++
 			row = 0

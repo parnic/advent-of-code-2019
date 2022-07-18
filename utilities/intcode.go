@@ -28,6 +28,8 @@ type IntcodeProgram struct {
 	program       []int64
 	relativeBase  int
 	haltRequested bool
+	printASCII    bool
+	feedInput     []rune
 }
 
 type IntcodeProgramState struct {
@@ -140,14 +142,15 @@ func (p *IntcodeProgram) Reset() {
 	p.relativeBase = 0
 }
 
-func (p *IntcodeProgram) Run() {
-	p.RunIn(func(int) int64 { return 0 }, func(int64, IntcodeProgramState) {})
+func (p *IntcodeProgram) Run() int64 {
+	return p.RunIn(func(int) int64 { return 0 }, func(int64, IntcodeProgramState) {})
 }
 
-func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOutputFunc) {
+func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOutputFunc) int64 {
 	p.init()
 
 	inputsRequested := 0
+	lastOutput := int64(0)
 	for instructionPointer := 0; instructionPointer < len(p.program) && !p.haltRequested; {
 		instruction := p.GetMemory(instructionPointer)
 		instructionPointer++
@@ -184,13 +187,28 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 		case opInput:
 			inputsRequested++
 			param1 := p.GetMemory(instructionPointer)
-			p.setMemory(int(param1), inputFunc(inputsRequested), paramModes[0])
+			var inputVal int64
+			if len(p.feedInput) > 0 {
+				inputVal = int64(p.feedInput[0])
+				p.feedInput = p.feedInput[1:]
+			} else {
+				inputVal = inputFunc(inputsRequested)
+			}
+			if p.printASCII && inputVal <= 255 {
+				fmt.Printf("%c", rune(inputVal))
+			}
+			p.setMemory(int(param1), inputVal, paramModes[0])
 
 			instructionPointer += 1
 
 		case opOutput:
 			param1 := p.GetMemory(instructionPointer)
-			outputFunc(p.getParamValue(int(param1), paramModes[0]), p.makeState(instructionPointer))
+			param1Val := p.getParamValue(int(param1), paramModes[0])
+			if p.printASCII && param1Val <= 255 {
+				fmt.Printf("%c", rune(param1Val))
+			}
+			outputFunc(param1Val, p.makeState(instructionPointer))
+			lastOutput = param1Val
 
 			instructionPointer += 1
 
@@ -256,8 +274,19 @@ func (p *IntcodeProgram) RunIn(inputFunc ProvideInputFunc, outputFunc ReceiveOut
 	}
 
 	p.haltRequested = false
+
+	return lastOutput
 }
 
 func (p *IntcodeProgram) Stop() {
 	p.haltRequested = true
+}
+
+func (p *IntcodeProgram) SetDebugASCIIPrint(enable bool) {
+	p.printASCII = enable
+}
+
+func (p *IntcodeProgram) FeedInputString(str string) {
+	p.feedInput = make([]rune, len(str))
+	copy(p.feedInput, []rune(str))
 }
