@@ -28,9 +28,6 @@ func (d *Day02) Part1() string {
 	d.setParams(12, 2)
 	d.program.Run()
 
-	if d.program.GetMemory(0) != 4138658 {
-		panic("")
-	}
 	return fmt.Sprintf("Position 0 = %s%d%s", utilities.TextBold, d.program.GetMemory(0), utilities.TextReset)
 }
 
@@ -58,9 +55,6 @@ func (d *Day02) Part2() string {
 
 	if !found {
 		panic("!found")
-	}
-	if noun != 72 || verb != 64 {
-		panic("")
 	}
 
 	return fmt.Sprintf("%d created by noun=%d, verb=%d. 100 * noun + verb = %s%d%s",
